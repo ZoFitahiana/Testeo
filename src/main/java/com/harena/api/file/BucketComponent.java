@@ -6,10 +6,14 @@ import com.harena.api.PojaGenerated;
 import java.io.File;
 import java.net.URL;
 import java.time.Duration;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.transfer.s3.model.DownloadFileRequest;
@@ -19,7 +23,6 @@ import software.amazon.awssdk.transfer.s3.model.UploadFileRequest;
 import software.amazon.awssdk.transfer.s3.progress.LoggingTransferListener;
 
 @PojaGenerated
-@SuppressWarnings("all")
 @Component
 @AllArgsConstructor
 public class BucketComponent {
@@ -32,11 +35,11 @@ public class BucketComponent {
 
   private FileHash uploadDirectory(File file, String bucketKey) {
     var request =
-        UploadDirectoryRequest.builder()
-            .source(file.toPath())
-            .bucket(bucketConf.getBucketName())
-            .s3Prefix(bucketKey)
-            .build();
+            UploadDirectoryRequest.builder()
+                    .source(file.toPath())
+                    .bucket(bucketConf.getBucketName())
+                    .s3Prefix(bucketKey)
+                    .build();
     var upload = bucketConf.getS3TransferManager().uploadDirectory(request);
     var uploaded = upload.completionFuture().join();
     if (!uploaded.failedTransfers().isEmpty()) {
@@ -47,11 +50,11 @@ public class BucketComponent {
 
   private FileHash uploadFile(File file, String bucketKey) {
     var request =
-        UploadFileRequest.builder()
-            .source(file)
-            .putObjectRequest(req -> req.bucket(bucketConf.getBucketName()).key(bucketKey))
-            .addTransferListener(LoggingTransferListener.create())
-            .build();
+            UploadFileRequest.builder()
+                    .source(file)
+                    .putObjectRequest(req -> req.bucket(bucketConf.getBucketName()).key(bucketKey))
+                    .addTransferListener(LoggingTransferListener.create())
+                    .build();
     var upload = bucketConf.getS3TransferManager().uploadFile(request);
     var uploaded = upload.completionFuture().join();
     return new FileHash(FileHashAlgorithm.SHA256, uploaded.response().checksumSHA256());
@@ -60,19 +63,19 @@ public class BucketComponent {
   @SneakyThrows
   public File download(String bucketKey) {
     var destination =
-        createTempFile(prefixFromBucketKey(bucketKey), suffixFromBucketKey(bucketKey));
+            createTempFile(prefixFromBucketKey(bucketKey), suffixFromBucketKey(bucketKey));
     FileDownload download =
-        bucketConf
-            .getS3TransferManager()
-            .downloadFile(
-                DownloadFileRequest.builder()
-                    .getObjectRequest(
-                        GetObjectRequest.builder()
-                            .bucket(bucketConf.getBucketName())
-                            .key(bucketKey)
-                            .build())
-                    .destination(destination)
-                    .build());
+            bucketConf
+                    .getS3TransferManager()
+                    .downloadFile(
+                            DownloadFileRequest.builder()
+                                    .getObjectRequest(
+                                            GetObjectRequest.builder()
+                                                    .bucket(bucketConf.getBucketName())
+                                                    .key(bucketKey)
+                                                    .build())
+                                    .destination(destination)
+                                    .build());
     download.completionFuture().join();
     return destination;
   }
@@ -94,19 +97,30 @@ public class BucketComponent {
 
   public URL presign(String bucketKey, Duration expiration) {
     GetObjectRequest getObjectRequest =
-        GetObjectRequest.builder().bucket(bucketConf.getBucketName()).key(bucketKey).build();
+            GetObjectRequest.builder().bucket(bucketConf.getBucketName()).key(bucketKey).build();
     PresignedGetObjectRequest presignedRequest =
-        bucketConf
-            .getS3Presigner()
-            .presignGetObject(
-                GetObjectPresignRequest.builder()
-                    .signatureDuration(expiration)
-                    .getObjectRequest(getObjectRequest)
-                    .build());
+            bucketConf
+                    .getS3Presigner()
+                    .presignGetObject(
+                            GetObjectPresignRequest.builder()
+                                    .signatureDuration(expiration)
+                                    .getObjectRequest(getObjectRequest)
+                                    .build());
     return presignedRequest.url();
   }
 
-  public String getBucketName() {
+  public List<S3Object> listObjects(String bucketKeyPrefix, String continuationToken) {
+    ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
+            .bucket(bucketConf.getBucketName())
+            .prefix(bucketKeyPrefix);
+    if (continuationToken != null) {
+      requestBuilder.continuationToken(continuationToken);
+    }
+    ListObjectsV2Response response = bucketConf.getS3Client().listObjectsV2(requestBuilder.build());
+    return response.contents();
+  }
+
+public String getBucketName() {
     return bucketConf.getBucketName();
   }
 }
