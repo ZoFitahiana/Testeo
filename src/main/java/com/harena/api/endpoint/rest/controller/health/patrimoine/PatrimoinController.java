@@ -15,6 +15,8 @@ import java.io.IOException;
 public class PatrimoinController {
     private final PatrimoineService patrimoineService;
 
+
+
     @GetMapping("/patrimoines")
     public List<Patrimoine> getPatrimoines(
             @RequestParam String bucketKeyPrefix,

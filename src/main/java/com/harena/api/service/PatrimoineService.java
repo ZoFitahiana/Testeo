@@ -23,6 +23,9 @@ public class PatrimoineService {
 
     private final BucketComponent bucketComponent;
 
+
+
+
     public List<Patrimoine> getListPatrimoine(String bucketKeyPrefix, String continuationToken) {
         List<S3Object> s3Objects = bucketComponent.listObjects(bucketKeyPrefix, continuationToken);
         return s3Objects.stream().map(this::mapToPatrimoine).collect(Collectors.toList());
