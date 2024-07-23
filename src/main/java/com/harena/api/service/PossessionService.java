@@ -41,19 +41,19 @@ public class PossessionService {
         }
         return file;
     }
- private Possession updatePossession(String bucketKeyPrefix , Possession possession) throws IOException {
-   String bucketkey = bucketKeyPrefix + "/" + possession.name();
-   File file = convertPossessionToFile(possession);
-   bucketComponent.upload(file,bucketkey);
+    public Possession updatePossession(String bucketKeyPrefix, Possession possession) throws IOException {
+        String bucketKey = bucketKeyPrefix + "/" + possession.name();
+        File file = convertPossessionToFile(possession);
+        bucketComponent.upload(file, bucketKey);
 
+        S3Object s3Object = S3Object.builder()
+                .key(bucketKey)
+                .lastModified(Instant.now())
+                .size(file.length())
+                .build();
 
-   S3Object s3Object = S3Object.builder()
-           .key(bucketkey)
-           .lastModified(Instant.now())
-           .size(file.length())
-           .build();
-     return possession;
- }
+        return mapToPossession(s3Object);
+    }
 
 
 
