@@ -9,12 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import static org.mockito.Mockito.when;
+@Component
 public class PatrimoinePossessionListTest {
 
     @Mock
