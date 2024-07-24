@@ -3,6 +3,7 @@ package com.harena.api.service;
 import com.harena.api.file.BucketComponent;
 import com.harena.api.repository.model.Devise;
 import com.harena.api.repository.model.Possession;
+import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.model.S3Object;
 import java.io.File;
 import java.io.FileWriter;
@@ -11,7 +12,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@Service
 public class PossessionService {
     private final BucketComponent bucketComponent;
 
@@ -54,7 +55,10 @@ public class PossessionService {
         return mapToPossession(s3Object);
     }
 
-
+    public void deletePatrimoinePossession(String bucketKeyPrefix, String possessionName) {
+        String bucketKey = bucketKeyPrefix + "/" + possessionName;
+        bucketComponent.deleteObject(bucketKey);
+    }
 
     private Possession mapToPossession(S3Object s3Object) {
         String key = s3Object.key();

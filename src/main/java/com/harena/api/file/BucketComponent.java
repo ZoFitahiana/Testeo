@@ -10,10 +10,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
-import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.transfer.s3.model.DownloadFileRequest;
@@ -122,5 +119,13 @@ public class BucketComponent {
 
 public String getBucketName() {
     return bucketConf.getBucketName();
+  }
+
+  public void deleteObject(String bucketKey) {
+    DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+            .bucket(bucketConf.getBucketName())
+            .key(bucketKey)
+            .build();
+    bucketConf.getS3Client().deleteObject(deleteObjectRequest);
   }
 }

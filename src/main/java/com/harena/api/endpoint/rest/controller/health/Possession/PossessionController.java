@@ -41,4 +41,11 @@ public class PossessionController {
         return possessionService.updatePatrimoinePossession(bucketKeyPrefix + "/" + patrimoineName, possession);
     }
 
+    @DeleteMapping("/patrimoines/{patrimoineName}/possessions/{possessionName}")
+    public void deletePatrimoinePossession(
+            @PathVariable String patrimoineName,
+            @PathVariable String possessionName,
+            @RequestParam String bucketKeyPrefix) {
+        possessionService.deletePatrimoinePossession(bucketKeyPrefix + "/" + patrimoineName, possessionName);
+    }
 }
