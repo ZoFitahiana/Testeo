@@ -18,12 +18,9 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-
 public class PatrimoineService {
 
     private final BucketComponent bucketComponent;
-
-
 
 
     public List<Patrimoine> getListPatrimoine(String bucketKeyPrefix, String continuationToken) {

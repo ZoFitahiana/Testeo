@@ -1,6 +1,4 @@
-
 package com.harena.api.Possession;
-
 import com.harena.api.file.BucketComponent;
 import com.harena.api.file.FileHash;
 import com.harena.api.file.FileHashAlgorithm;

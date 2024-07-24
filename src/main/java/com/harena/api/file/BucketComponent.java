@@ -24,6 +24,7 @@ import software.amazon.awssdk.transfer.s3.progress.LoggingTransferListener;
 @AllArgsConstructor
 public class BucketComponent {
 
+
   private final BucketConf bucketConf;
 
   public FileHash upload(File file, String bucketKey) {

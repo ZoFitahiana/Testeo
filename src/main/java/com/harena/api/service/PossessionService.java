@@ -52,7 +52,7 @@ public class PossessionService {
                 .size(file.length())
                 .build();
 
-        return mapToPossession(s3Object);
+        return new Possession(Instant.now(), possession.name(), possession.carryingAmount(), possession.devise());
     }
 
     public void deletePatrimoinePossession(String bucketKeyPrefix, String possessionName) {

@@ -1,4 +1,3 @@
-
 package com.harena.api.Possession;
 
 import com.harena.api.file.BucketComponent;
@@ -33,15 +32,14 @@ public class PossessionTest {
 
     @Test
     public void test_get_patrimoine_possession_by_name() {
-        // Mock data
         S3Object s3Object1 = S3Object.builder()
-                .key("possession1")
+                .key("prefix/possession1")
                 .lastModified(Instant.now())
                 .size(100L)
                 .build();
 
         S3Object s3Object2 = S3Object.builder()
-                .key("possession2")
+                .key("prefix/possession2")
                 .lastModified(Instant.now())
                 .size(100L)
                 .build();
@@ -49,12 +47,13 @@ public class PossessionTest {
         List<S3Object> s3Objects = Arrays.asList(s3Object1, s3Object2);
         when(bucketComponent.listObjects("prefix", null)).thenReturn(s3Objects);
 
+
         Optional<Possession> possession = possessionService.getPatrimoinePossessionByNom("prefix", "possession1");
         Assertions.assertTrue(possession.isPresent());
         Assertions.assertEquals("possession1", possession.get().name());
-        Assertions.assertEquals("possession2" , possession.get().name());
+
+        Optional<Possession> possession2 = possessionService.getPatrimoinePossessionByNom("prefix", "possession2");
+        Assertions.assertTrue(possession2.isPresent());
+        Assertions.assertEquals("possession2", possession2.get().name());
     }
 }
-
-
-
