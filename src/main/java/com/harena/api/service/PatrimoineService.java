@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-
 public class PatrimoineService {
 
     private final BucketComponent bucketComponent;
+
 
     public List<Patrimoine> getListPatrimoine(String bucketKeyPrefix, String continuationToken) {
         List<S3Object> s3Objects = bucketComponent.listObjects(bucketKeyPrefix, continuationToken);
