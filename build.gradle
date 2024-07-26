@@ -25,7 +25,25 @@ sonarqube {
 } 
 
 repositories {
-
+mavenLocal()
+maven {
+    url 'https://patrimoine-134896778594.d.codeartifact.eu-west-3.amazonaws.com/maven/patrimoine/'
+    credentials {
+        username = 'aws'
+        password = {
+            def output = new ByteArrayOutputStream()
+            exec {
+                if(Os.isFamily(Os.FAMILY_WINDOWS)){
+                    commandLine 'powershell', '-Command', 'aws codeartifact get-authorization-token --domain patrimoine --domain-owner 134896778594 --region eu-west-3 --query authorizationToken --output text'
+                }else {
+                    commandLine 'bash', '-c', 'aws codeartifact get-authorization-token --domain patrimoine --domain-owner 134896778594 --region eu-west-3 --query authorizationToken --output text'
+                }
+                standardOutput = output
+            }
+            return output.toString().trim()
+        }()
+    }
+}
     mavenCentral()
 }
 
@@ -200,6 +218,6 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter:1.19.1'
     testImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
 
-
+implementation 'school.hei:patrimoine:1.0-SNAPSHOT'
 
 }
